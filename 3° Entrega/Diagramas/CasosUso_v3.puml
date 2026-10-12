@@ -1,0 +1,103 @@
+@startuml
+skinparam linetype polyline
+skinparam vpDiagramType UseCaseDiagram
+left to right direction
+
+skinparam backgroundColor #E9EDF2
+skinparam shadowing false
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 13
+
+skinparam nodesep 10
+skinparam ranksep 30
+
+' ================= ESTILOS GLOBALES =================
+skinparam arrowColor #33475B
+skinparam arrowThickness 2
+
+skinparam packageStyle rectangle
+skinparam packageBackgroundColor #F4F6F9
+skinparam packageBorderColor #7A8B9A
+skinparam packageBorderThickness 2
+skinparam packageFontColor #1F2933
+skinparam packageFontStyle bold
+
+skinparam actorStyle awesome
+skinparam actorBackgroundColor #FFFFFF
+skinparam actorBorderColor #12355B
+skinparam actorFontColor #1F2933
+skinparam actorFontSize 13
+skinparam actorFontStyle bold
+
+skinparam usecase {
+  BackgroundColor #2C6ECB
+  BorderColor #12355B
+  BorderThickness 2
+  FontColor #FFFFFF
+  FontSize 13
+  FontStyle bold
+}
+
+' ================= ACTORES =================
+actor "Usuario" as Usuario
+actor "Temporizador del sistema" as Tiempo
+
+' ================= SISTEMA =================
+rectangle "Sistema de Organización de Retiros" {
+
+  usecase "Registrar retiro" as UC01
+  usecase "Modificar datos generales de retiro" as UC02
+  usecase "Modificar estado de retiro" as UC03
+  usecase "Consultar retiro" as UC04
+
+  usecase "Registrar integrantes de grupo" as UC05
+  usecase "Modificar integrantes de grupo" as UC06
+  usecase "Consultar integrantes de grupo" as UC07
+
+  usecase "Registrar enlaces de referencia" as UC08
+  usecase "Modificar enlaces de referencia" as UC09
+  usecase "Exportar paquete de información" as UC10
+
+  usecase "Registrar pago" as UC11
+  usecase "Registrar gastos adicionales" as UC12
+
+  rectangle "Subsistema de Administración" {
+    usecase "Registrar servicio adicional" as UC13
+    usecase "Modificar servicio adicional" as UC14
+    usecase "Registrar actividad" as UC15
+    usecase "Modificar datos de actividad" as UC16
+  }
+
+  rectangle "Subsistema de Alertas y Notificaciones" {
+    usecase "Emitir alertas de agenda" as UC17
+  }
+
+  ' Relaciones <<extend>> hacia el caso base UC01
+  UC05 ..> UC01 : <<extend>>
+  UC08 ..> UC01 : <<extend>>
+  UC13 ..> UC01 : <<extend>>
+  UC15 ..> UC01 : <<extend>>
+}
+
+' ================= RELACIONES: USUARIO =================
+Usuario --> UC01
+Usuario --> UC02
+Usuario --> UC03
+Usuario --> UC04
+Usuario --> UC05
+Usuario --> UC06
+Usuario --> UC07
+Usuario --> UC08
+Usuario --> UC09
+Usuario --> UC10
+Usuario --> UC11
+Usuario --> UC12
+Usuario --> UC13
+Usuario --> UC14
+Usuario --> UC15
+Usuario --> UC16
+
+' ================= RELACIONES: TEMPORIZADOR =================
+Tiempo --> UC17
+
+@enduml
