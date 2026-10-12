@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ZenData · CU02 Modificar datos de retiro (prototipo)</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F1F4EF;--sf:#fff;--ink:#1E3330;--mu:#5E7270;--ln:#D5DDD6;--ac:#2F6B5E;--aci:#fff;--lav:#7B63A8;--wn:#9A6A12;--dg:#A2374F;--hd:#1E3A36;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121C1A;--sf:#1A2724;--ink:#E3EDE9;--mu:#93A8A3;--ln:#2D3E3A;--ac:#7FC0AE;--aci:#0F1E1B;--lav:#B7A3DE;--wn:#E0B35A;--dg:#E58AA0;--hd:#0D1816}}
+:root[data-theme="dark"]{--bg:#121C1A;--sf:#1A2724;--ink:#E3EDE9;--mu:#93A8A3;--ln:#2D3E3A;--ac:#7FC0AE;--aci:#0F1E1B;--lav:#B7A3DE;--wn:#E0B35A;--dg:#E58AA0;--hd:#0D1816}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 Outfit,system-ui,sans-serif}
+button,select,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+button:disabled{cursor:not-allowed;opacity:.55}
+:focus-visible{outline:2px solid var(--lav);outline-offset:2px}
+header{background:var(--hd);color:#E8F0EC;padding:12px 20px}
+header b{font-size:19px;font-weight:700;letter-spacing:.2px}
+header small{display:block;color:#9FB8B0;font-size:12px;margin-top:-4px}
+main{max-width:1180px;margin:0 auto;padding:20px}
+.grid{display:grid;grid-template-columns:320px 1fr;gap:20px;align-items:start}
+@media(max-width:820px){.grid{grid-template-columns:1fr}}
+.pri{background:var(--ac);color:var(--aci);border:0;border-radius:8px;padding:8px 16px;font-weight:600}
+.sec{background:var(--sf);border:1px solid var(--ac);color:var(--ac);border-radius:8px;padding:7px 14px;font-weight:500}
+.card{display:block;width:100%;text-align:left;background:var(--sf);border:1px solid var(--ln);border-left:4px solid currentColor;border-radius:10px;padding:12px 14px;margin-bottom:10px}
+.card[aria-current=true]{border-color:var(--ac);border-left-color:currentColor;box-shadow:0 0 0 1px var(--ac)}
+.card h3{margin:0 0 2px;font-size:16px;color:var(--ink)}
+.card p{margin:0;color:var(--mu);font-size:13px}
+.pill{display:inline-block;border:1px solid currentColor;border-radius:99px;padding:0 9px;font-size:12px;font-weight:600;margin-top:6px}
+.e-planificado{color:var(--lav)}.e-reservado{color:var(--ac)}.e-realizado{color:var(--mu)}.e-cancelado{color:var(--dg)}
+.pnl{background:var(--sf);border:1px solid var(--ln);border-radius:12px;padding:20px}
+.pnl h2{margin:0;font-size:24px;line-height:1.2}
+.pnl h3{margin:18px 0 8px;font-size:16px}
+.sub{color:var(--mu);margin:2px 0 14px}
+.act{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
+dl{display:grid;grid-template-columns:170px 1fr;gap:6px 14px;margin:0 0 16px}
+dt{color:var(--mu)}dd{margin:0}
+.empty{color:var(--mu);padding:8px 0}
+.steps{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 18px;padding:0;list-style:none}
+.steps li{border:2px solid var(--ln);color:var(--mu);border-radius:99px;padding:3px 14px;font-size:13px;font-weight:500}
+.steps li[aria-current=step]{border-color:var(--ac);color:var(--ink);font-weight:700}
+.fld{margin-bottom:12px}
+.fld label{display:block;font-size:13px;color:var(--mu);margin-bottom:2px}
+.fld input,.fld select,.fld textarea{width:100%;background:var(--bg);border:1px solid var(--ln);border-radius:8px;padding:8px}
+.fld input[aria-invalid=true],.fld select[aria-invalid=true]{border-color:var(--dg);box-shadow:0 0 0 1px var(--dg)}
+.fld input[readonly]{opacity:.75;cursor:not-allowed}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+@media(max-width:560px){.two{grid-template-columns:1fr}}
+.msg{color:var(--dg);font-size:13px;margin:3px 0 0}
+.hint{color:var(--mu);font-size:12px;margin:3px 0 0}
+.req{color:var(--dg)}
+.al{border:1px solid var(--dg);border-left-width:5px;border-radius:10px;padding:10px 14px;margin:0 0 14px;background:var(--sf)}
+.al b{color:var(--dg)}
+.al ul{margin:6px 0 0;padding-left:20px}
+.nf{border:1px solid var(--wn);border-left-width:5px;border-radius:10px;padding:10px 14px;margin:0 0 14px;background:var(--sf)}
+.nf b{color:var(--wn)}
+.note{background:color-mix(in srgb,var(--lav) 12%,transparent);border-radius:8px;padding:8px 12px;font-size:13px;margin:0 0 14px}
+.sc{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--ln);vertical-align:top}
+th{color:var(--mu);font-weight:500}
+td.old{color:var(--mu);text-decoration:line-through}
+td.new{font-weight:600}
+.dact{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;margin-top:16px}
+.sim{margin-top:14px;background:var(--sf);border:1px dashed var(--ln);border-radius:10px;padding:10px 12px;font-size:13px}
+.sim summary{cursor:pointer;color:var(--mu)}
+.sim .tag{color:var(--mu);font-size:12px}
+.fld .lab{font-size:13px;color:var(--mu);margin-bottom:2px}
+.ro{background:var(--bg);border:1px solid var(--ln);border-radius:8px;padding:8px;opacity:.75;cursor:not-allowed;user-select:none;-webkit-user-select:none;pointer-events:none}
+.ov{position:fixed;inset:0;background:#0009;display:grid;place-items:center;padding:16px;z-index:50}
+.ov[hidden]{display:none}
+.ob{background:var(--sf);color:var(--ink);border:1px solid var(--dg);border-top-width:6px;border-radius:14px;padding:20px;width:min(480px,100%);max-height:90vh;overflow:auto;outline:none}
+.ob h3{margin:0 0 8px;font-size:18px;color:var(--dg)}
+.ob ul{margin:6px 0 0;padding-left:20px}
+.sim label{display:flex;gap:8px;align-items:flex-start;margin-top:8px}
+#ts{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:9px 18px;border-radius:99px;opacity:0;pointer-events:none;transition:opacity .2s;max-width:92vw;text-align:center}
+#ts.on{opacity:1}
+@media(prefers-reduced-motion:reduce){#ts{transition:none}}
+</style>
+</head>
+<body>
+<header><b>ZenData</b><small>CU02 · Modificar datos de retiro · prototipo aislado</small></header>
+<main>
+  <div class="grid">
+    <aside>
+      <div id="lista"></div>
+      <div class="sim"><b>Simulación de escenarios</b> <span class="tag">(solo para la demo)</span>
+        <label><input type="checkbox" id="simA1" onchange="say(this.checked?'Escenario 1A activado: al tocar Modificar retiro no se encontrarán los datos.':'Escenario 1A desactivado.')"><span>Flujo alternativo 1A: el sistema no encuentra los datos del retiro</span></label>
+      </div>
+    </aside>
+    <section id="panel" aria-live="polite"></section>
+  </div>
+</main>
+<div class="ov" id="ov" hidden><div class="ob" role="alertdialog" aria-modal="true" aria-labelledby="ot" aria-describedby="om" tabindex="-1"><h3 id="ot"></h3><div id="om"></div><div class="dact"><button class="pri" id="ok" onclick="closeAlert()">Entendido</button></div></div></div>
+<div id="ts" role="status" aria-live="polite"></div>
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const money=n=>new Intl.NumberFormat('es-AR',{style:'currency',currency:'ARS',maximumFractionDigits:0}).format(n||0);
+const fmt=d=>d?new Date(d+'T12:00:00').toLocaleDateString('es-AR',{day:'numeric',month:'short',year:'numeric'}):'—';
+const stamp=d=>d?d.toLocaleString('es-AR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'—';
+const CAT=['Meditación','Yoga','Naturaleza','Terapias holísticas','Bienestar'];
+
+/* Datos de ejemplo. "codigo" (ID de retiro) y "estado" NO son editables en este CU. */
+const S=[
+ {codigo:'RET-0001',nombre:'Caminos al Ser',descripcion:'Retiro de 3 días con meditación, yoga y caminatas guiadas.',ubicacion:'Capilla del Monte, Córdoba',inicio:'2026-10-23',fin:'2026-10-25',categoria:'Meditación',precio:480000,estado:'reservado',org:{nombre:'Sebastián Alberoni',telefono:'+54 9 3548 574276',mail:''},mod:null},
+ {codigo:'RET-0002',nombre:'Místico ecolodge',descripcion:'Fin de semana con armonización sonora y masajes.',ubicacion:'San Antonio de Arredondo, Córdoba',inicio:'2026-10-30',fin:'2026-11-01',categoria:'Bienestar',precio:335000,estado:'planificado',org:{nombre:'Silvi Bustos',telefono:'+54 9 3512 08-5102',mail:'fabiana.palacio2@gmail.com'},mod:null},
+ {codigo:'RET-0003',nombre:'Centro Umepay',descripcion:'Estadía de 2 noches en cabaña privada.',ubicacion:'Villa Yacanto, Córdoba',inicio:'2026-08-14',fin:'2026-08-16',categoria:'Terapias holísticas',precio:346000,estado:'realizado',org:{nombre:'Julieta',telefono:'+54 9 3546 40-3331',mail:''},mod:null}
+];
+
+/* Campos editables (observaciones del CU). req = obligatorio según reglas de validación. */
+const F=[
+ {k:'nombre',l:'Nombre',req:1},
+ {k:'descripcion',l:'Descripción',t:'area'},
+ {k:'ubicacion',l:'Ubicación',req:1},
+ {k:'inicio',l:'Fecha de inicio',t:'date',req:1,two:1},
+ {k:'fin',l:'Fecha de finalización',t:'date',req:1,two:1},
+ {k:'categoria',l:'Categoría',t:'select',req:1,two:1},
+ {k:'precio',l:'Precio base (ARS)',t:'number',req:1,two:1},
+ {k:'oN',l:'Organizador responsable'},
+ {k:'oT',l:'Teléfono del organizador',t:'tel',two:1},
+ {k:'oM',l:'Email del organizador',t:'email',two:1}
+];
+
+let sel=0,mode='ver',draft={},errs={},banner=null,tt;
+const R=()=>S[sel];
+const say=m=>{const t=$('#ts');t.textContent=m;t.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('on'),2800)};
+const toForm=r=>({nombre:r.nombre,descripcion:r.descripcion,ubicacion:r.ubicacion,inicio:r.inicio,fin:r.fin,categoria:r.categoria,precio:String(r.precio),oN:r.org.nombre,oT:r.org.telefono,oM:r.org.mail});
+const show=(k,v)=>k==='inicio'||k==='fin'?fmt(v):k==='precio'?money(Number(v)):(String(v).trim()||'—');
+const norm=(k,v)=>k==='precio'?String(Number(String(v).replace(',','.'))):String(v??'').trim();
+
+/* Reglas de validación del CU02 */
+function validate(d){const e={};
+ ['nombre','ubicacion','inicio','fin','categoria','precio'].forEach(k=>{if(!String(d[k]??'').trim())e[k]='Este campo es obligatorio.'});
+ if(!e.precio){const n=Number(String(d.precio).replace(',','.'));if(!Number.isFinite(n)||n<=0)e.precio='El precio base debe ser un valor numérico mayor a cero.'}
+ if(!e.inicio&&!e.fin&&d.fin<d.inicio)e.fin='La fecha de finalización debe ser igual o posterior a la fecha de inicio.';
+ return e}
+const changes=d=>{const base=toForm(R());return F.filter(f=>norm(f.k,d[f.k])!==norm(f.k,base[f.k])).map(f=>({f,antes:base[f.k],despues:d[f.k]}))};
+const collect=()=>{const fd=new FormData($('#fm')),o={};F.forEach(f=>o[f.k]=fd.get(f.k)??'');return o};
+
+/* Ventana de alerta (validaciones y avisos) */
+let lastFocus=null,afterAlert=null;
+function alertBox(title,items,after){
+ $('#ot').textContent=title;
+ $('#om').innerHTML=Array.isArray(items)?`<ul>${items.map(i=>`<li>${esc(i)}</li>`).join('')}</ul>`:`<p style="margin:0">${esc(items)}</p>`;
+ lastFocus=document.activeElement;afterAlert=after||null;$('#ov').hidden=false;$('#ok').focus()}
+function closeAlert(){$('#ov').hidden=true;const a=afterAlert;afterAlert=null;if(a)a();else if(lastFocus&&document.contains(lastFocus))lastFocus.focus()}
+document.addEventListener('keydown',e=>{if($('#ov').hidden)return;if(e.key==='Escape'){e.preventDefault();closeAlert()}else if(e.key==='Tab'){e.preventDefault();$('#ok').focus()}});
+const focusInvalid=()=>{const el=document.querySelector('[aria-invalid="true"]');if(el)el.focus()};
+
+/* Flujo del CU */
+function start(){ /* paso 1-2 */
+ if($('#simA1').checked){banner={t:'nf',h:'No se encontraron los datos del retiro',m:'El sistema no pudo recuperar la información del retiro. Se cancela el caso de uso (flujo alternativo 1A).'};mode='ver';render();alertBox(banner.h,banner.m);return}
+ banner=null;draft=toForm(R());errs={};mode='editar';render()}
+function submitForm(){ /* paso 3-4 */
+ draft=collect();errs=validate(draft);banner=null;
+ if(Object.keys(errs).length){render();alertBox('No se pudo continuar: revisá los datos',Object.keys(errs).map(k=>F.find(f=>f.k===k).l+': '+errs[k]),focusInvalid);return} /* 2A: informa y vuelve al paso 3 */
+ if(!changes(draft).length){render();alertBox('No hay cambios para confirmar','No modificaste ningún campo. Editá al menos un dato o cancelá la operación.');return}
+ mode='confirmar';render()} /* paso 5: pregunta si desea confirmar */
+const fmKey=e=>{if(e.key==='Enter'&&e.target.tagName!=='TEXTAREA'&&e.target.tagName!=='BUTTON'){e.preventDefault();submitForm()}};
+function confirmar(){ /* paso 6-7 */
+ const d=draft,r=R();
+ Object.assign(r,{nombre:d.nombre.trim(),descripcion:d.descripcion.trim(),ubicacion:d.ubicacion.trim(),inicio:d.inicio,fin:d.fin,categoria:d.categoria,precio:Number(String(d.precio).replace(',','.')),org:{nombre:d.oN.trim(),telefono:d.oT.trim(),mail:d.oM.trim()},mod:new Date()});
+ mode='ver';banner=null;render();say('Cambios registrados correctamente')}
+function cancelar(){mode='ver';banner=null;errs={};render();say('Modificación cancelada. No se guardaron cambios.')} /* 3A */
+function volver(){mode='editar';render()}
+
+/* Vistas */
+function fieldHtml(f){const v=draft[f.k]??'',er=errs[f.k],id='f_'+f.k;
+ const lab=`<label for="${id}">${f.l}${f.req?' <span class="req" aria-hidden="true">*</span>':''}</label>`;
+ const aria=`${er?'aria-invalid="true" aria-describedby="e_'+f.k+'"':''}${f.req?' aria-required="true"':''}`;
+ let i;
+ if(f.t==='select')i=`<select id="${id}" name="${f.k}" ${aria}>${CAT.map(o=>`<option ${o===v?'selected':''}>${esc(o)}</option>`).join('')}</select>`;
+ else if(f.t==='area')i=`<textarea id="${id}" name="${f.k}" rows="3">${esc(v)}</textarea>`;
+ else if(f.t==='number')i=`<input id="${id}" name="${f.k}" type="number" step="any" inputmode="decimal" value="${esc(v)}" ${aria}>`;
+ else i=`<input id="${id}" name="${f.k}" type="${f.t||'text'}" value="${esc(v)}" ${aria}>`;
+ return `<div class="fld">${lab}${i}${er?`<p class="msg" id="e_${f.k}">${esc(er)}</p>`:''}</div>`}
+function vEditar(r){
+ const ek=Object.keys(errs);
+ const rows=[];for(let i=0;i<F.length;){if(F[i].two&&F[i+1]&&F[i+1].two){rows.push(`<div class="two">${fieldHtml(F[i])}${fieldHtml(F[i+1])}</div>`);i+=2}else{rows.push(fieldHtml(F[i]));i++}}
+ return `<h2>Modificar datos de retiro</h2><p class="sub">${esc(r.nombre)}</p>
+ <ol class="steps"><li aria-current="step">1 · Editar datos</li><li>2 · Confirmar cambios</li></ol>
+ ${banner?`<div class="${banner.t}"><b>${esc(banner.h)}</b><br>${esc(banner.m)}</div>`:''}
+ ${ek.length?`<div class="al" role="alert"><b>Revisá los datos ingresados</b><ul>${ek.map(k=>`<li>${esc(F.find(f=>f.k===k).l)}: ${esc(errs[k])}</li>`).join('')}</ul></div>`:''}
+ <form id="fm" novalidate onsubmit="return false" onkeydown="fmKey(event)">
+  <div class="two"><div class="fld"><div class="lab" id="l_codigo">ID de retiro</div><div class="ro" id="f_codigo" aria-labelledby="l_codigo">${esc(r.codigo)}</div><p class="hint">No editable</p></div>
+  <div class="fld"><div class="lab" id="l_estado">Estado</div><div class="ro" id="f_estado" aria-labelledby="l_estado">${esc(r.estado)}</div><p class="hint">No editable en este caso de uso</p></div></div>
+  ${rows.join('')}
+  <p class="hint"><span class="req">*</span> Campos obligatorios</p>
+  <div class="dact"><button type="button" class="sec" onclick="cancelar()">Cancelar</button><button type="button" class="pri" onclick="submitForm()">Continuar</button></div>
+ </form>`}
+function vConfirmar(r){const c=changes(draft);
+ return `<h2>Confirmar cambios</h2><p class="sub">${esc(r.nombre)}</p>
+ <ol class="steps"><li>1 · Editar datos</li><li aria-current="step">2 · Confirmar cambios</li></ol>
+ <p><b>¿Desea confirmar los siguientes cambios?</b></p>
+ <div class="sc"><table><thead><tr><th>Campo</th><th>Valor actual</th><th>Valor nuevo</th></tr></thead><tbody>
+ ${c.map(x=>`<tr><td>${esc(x.f.l)}</td><td class="old">${esc(show(x.f.k,x.antes))}</td><td class="new">${esc(show(x.f.k,x.despues))}</td></tr>`).join('')}</tbody></table></div>
+ <div class="dact"><button class="sec" onclick="cancelar()">Cancelar</button><button class="sec" onclick="volver()">Volver a editar</button><button class="pri" onclick="confirmar()">Confirmar cambios</button></div>`}
+function vVer(r){
+ return `<h2>${esc(r.nombre)}</h2><p class="sub">${esc(r.ubicacion)} · ${fmt(r.inicio)} a ${fmt(r.fin)}</p>
+ ${banner?`<div class="${banner.t}" role="alert"><b>${esc(banner.h)}</b><br>${esc(banner.m)}</div>`:''}
+ <div class="act"><button class="pri" onclick="start()">Modificar retiro</button></div>
+ <dl><dt>ID de retiro</dt><dd>${esc(r.codigo)}</dd><dt>Estado</dt><dd><span class="pill e-${r.estado}" style="margin:0">${r.estado}</span></dd><dt>Descripción</dt><dd>${esc(r.descripcion)||'—'}</dd><dt>Ubicación</dt><dd>${esc(r.ubicacion)}</dd><dt>Fechas</dt><dd>${fmt(r.inicio)} a ${fmt(r.fin)}</dd><dt>Categoría</dt><dd>${esc(r.categoria)}</dd><dt>Precio base</dt><dd>${money(r.precio)}</dd><dt>Organizador</dt><dd>${esc(r.org.nombre)||'—'}<br><span class="sub" style="margin:0">${esc(r.org.telefono)} ${esc(r.org.mail)}</span></dd><dt>Última modificación</dt><dd>${r.mod?stamp(r.mod):'Sin modificaciones'}</dd></dl>`}
+function render(){
+ $('#lista').innerHTML=S.map((r,i)=>`<button class="card e-${r.estado}" aria-current="${i===sel}" ${mode!=='ver'?'disabled':''} onclick="sel=${i};banner=null;render()"><h3>${esc(r.nombre)}</h3><p>${esc(r.ubicacion)}</p><p>${fmt(r.inicio)} a ${fmt(r.fin)}</p><span class="pill">${r.estado}</span></button>`).join('');
+ $('#panel').innerHTML=`<div class="pnl">${mode==='editar'?vEditar(R()):mode==='confirmar'?vConfirmar(R()):vVer(R())}</div>`;
+}
+render();
+</script>
+</body>
+</html>

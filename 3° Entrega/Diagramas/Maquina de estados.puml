@@ -1,0 +1,32 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 12
+skinparam shadowing false
+
+skinparam state {
+  BackgroundColor #D7F9F1
+  BorderColor #0D7C66
+  FontColor #0D4E41
+  FontSize 13
+  FontStyle bold
+  BorderThickness 1.5
+  ArrowColor #0D7C66
+  ArrowThickness 1.5
+}
+
+state Cancelado #FFECEC
+state Realizado #E2E8F0
+
+[*] --> Planificado : registrarRetiro()
+
+Planificado --> Reservado : registrarPago() [seña o pago registrado]
+
+Planificado --> Cancelado : modificarEstado() [solicitar cancelación]
+Reservado --> Cancelado : modificarEstado() [solicitar cancelación]
+
+Reservado --> Realizado : modificarEstado() [evento concluido / asistido]
+
+Cancelado --> [*]
+Realizado --> [*]
+@enduml
