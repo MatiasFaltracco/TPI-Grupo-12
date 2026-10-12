@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>UC01 · Registrar Retiro</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F1F4EF;
+  --sf: #FFFFFF;
+  --ink: #1E3330;
+  --mu: #5E7270;
+  --ln: #D5DDD6;
+  --ac: #2F6B5E;
+  --aci: #FFFFFF;
+  --lav: #7B63A8;
+  --dg: #A2374F;
+  --hd: #1E3A36;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #121C1A;
+    --sf: #1A2724;
+    --ink: #E3EDE9;
+    --mu: #93A8A3;
+    --ln: #2D3E3A;
+    --ac: #7FC0AE;
+    --aci: #0F1E1B;
+    --lav: #B7A3DE;
+    --dg: #E58AA0;
+    --hd: #0D1816;
+  }
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 15px/1.5 Outfit, system-ui, sans-serif;
+}
+
+button, select, input, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+
+header {
+  background: var(--hd);
+  color: #E8F0EC;
+  padding: 14px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+header b { font-size: 18px; }
+header span { font-size: 13px; color: #9FB8B0; }
+
+main {
+  max-width: 900px;
+  margin: 28px auto;
+  padding: 0 16px;
+}
+
+.panel {
+  background: var(--sf);
+  border: 1px solid var(--ln);
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.top-bar h2 { margin: 0; font-size: 22px; }
+
+.pri {
+  background: var(--ac);
+  color: var(--aci);
+  border: 0;
+  border-radius: 8px;
+  padding: 9px 16px;
+  font-weight: 600;
+}
+.sec {
+  background: var(--sf);
+  border: 1px solid var(--ac);
+  color: var(--ac);
+  border-radius: 8px;
+  padding: 7px 12px;
+  font-weight: 500;
+}
+
+dialog {
+  border: 1px solid var(--ln);
+  border-radius: 14px;
+  background: var(--sf);
+  color: var(--ink);
+  padding: 22px;
+  width: min(560px, 94vw);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+dialog::backdrop { background: rgba(0,0,0,0.5); }
+dialog h3 { margin: 0 0 14px; font-size: 20px; }
+
+.flds label { display: block; margin-bottom: 12px; }
+.flds span { display: block; font-size: 13px; color: var(--mu); margin-bottom: 3px; }
+.flds input:not([type=checkbox]), .flds select, .flds textarea {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--ln);
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+
+.px {
+  margin-top: 14px;
+  border-top: 1px solid var(--ln);
+  padding-top: 14px;
+}
+.px h4 { margin: 0 0 4px; font-size: 15px; }
+.px .sub { margin: 0 0 10px; font-size: 13px; color: var(--mu); }
+
+.item-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.item-chip {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg);
+  border: 1px solid var(--ln);
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.xerr { color: var(--dg); font-size: 13px; margin: 8px 0 0; }
+.dact { display: flex; gap: 8px; justify-content: flex-end; margin-top: 18px; }
+
+.retiro-card {
+  border: 1px solid var(--ln);
+  border-left: 4px solid var(--ac);
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+}
+.retiro-card h3 { margin: 0 0 4px; }
+.retiro-card p { margin: 0 0 6px; color: var(--mu); font-size: 14px; }
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 99px;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid var(--ac);
+  color: var(--ac);
+}
+
+#ts {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  background: var(--ink);
+  color: var(--bg);
+  padding: 9px 18px;
+  border-radius: 99px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s;
+  font-size: 14px;
+}
+#ts.on { opacity: 1; }
+
+.resumen-box {
+  background: var(--bg);
+  border: 1px solid var(--ln);
+  border-radius: 10px;
+  padding: 14px;
+  font-size: 14px;
+}
+.resumen-box dl {
+  margin: 0;
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: 6px 12px;
+}
+.resumen-box dt { color: var(--mu); }
+.resumen-box dd { margin: 0; font-weight: 500; }
+</style>
+</head>
+<body>
+
+<header>
+  <div><b>ZenData</b> <span>Prototipo aislado</span></div>
+  <div><b>Caso de Uso:</b> Registrar retiro (UC01)</div>
+</header>
+
+<main>
+  <div class="panel">
+    <div class="top-bar">
+      <div>
+        <h2>Retiros registrados</h2>
+        <p style="margin: 4px 0 0; color: var(--mu); font-size: 14px;">Ejecución y pruebas del caso de uso Registrar retiro</p>
+      </div>
+      <button class="pri" onclick="abrirModalRegistrar()">Registrar retiro</button>
+    </div>
+
+    <div id="listaRetiros"></div>
+  </div>
+</main>
+
+<!-- Modal: Paso 2 - Formulario de alta con opciones de extensión -->
+<dialog id="dlg">
+  <form id="f">
+    <h3>Registrar retiro</h3>
+    <div class="flds">
+      <label><span>Nombre</span><input name="nombre" type="text" placeholder="Nombre del retiro"></label>
+      <label><span>Descripción</span><textarea name="descripcion" rows="2" placeholder="Descripción..."></textarea></label>
+      <label><span>Ubicación</span><input name="ubicacion" type="text" placeholder="Ubicación o sede"></label>
+      
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+        <label><span>Estado</span>
+          <select name="estado">
+            <option value="Planificado">Planificado</option>
+            <option value="Reservado">Reservado</option>
+          </select>
+        </label>
+        <label><span>Categoría</span>
+          <select name="categoria">
+            <option>Meditación</option>
+            <option>Yoga</option>
+            <option>Naturaleza</option>
+            <option>Terapias holísticas</option>
+            <option>Bienestar</option>
+          </select>
+        </label>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+        <label><span>Fecha de inicio</span><input name="inicio" type="date"></label>
+        <label><span>Fecha de finalización</span><input name="fin" type="date"></label>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+        <label><span>Organizador</span><input name="organizador" type="text" placeholder="Nombre del organizador"></label>
+        <label><span>Precio del retiro</span><input name="precio" type="number" min="0" placeholder="0"></label>
+      </div>
+    </div>
+
+    <!-- Opciones de Extensión (Puntos de Extensión FA3, FA4, FA5, FA6) -->
+    <div class="px">
+      <h4>Servicios adicionales (FA4 / UC13)</h4>
+      <p class="sub">Opcional: asociar un servicio adicional al catálogo.</p>
+      <div class="item-list" id="lstServ"></div>
+      <button type="button" class="sec" onclick="abrirExtension('serv')">+ Extender a UC13: Registrar servicio adicional</button>
+    </div>
+
+    <div class="px">
+      <h4>Actividades (FA3 / UC15)</h4>
+      <p class="sub">Opcional: asociar una actividad desde el registro.</p>
+      <div class="item-list" id="lstAct"></div>
+      <button type="button" class="sec" onclick="abrirExtension('act')">+ Extender a UC15: Registrar actividad</button>
+    </div>
+
+    <div class="px">
+      <h4>Integrantes de grupo (FA5 / UC05)</h4>
+      <p class="sub">Opcional: cargar la lista inicial de integrantes.</p>
+      <div class="item-list" id="lstInt"></div>
+      <button type="button" class="sec" onclick="abrirExtension('int')">+ Extender a UC05: Registrar integrantes de grupo</button>
+    </div>
+
+    <div class="px">
+      <h4>Enlaces de referencia (FA6 / UC08)</h4>
+      <p class="sub">Opcional: adjuntar links de referencia al retiro.</p>
+      <div class="item-list" id="lstEnl"></div>
+      <button type="button" class="sec" onclick="abrirExtension('enl')">+ Extender a UC08: Registrar enlaces de referencia</button>
+    </div>
+
+    <p class="xerr" id="xerr0" role="alert" hidden></p>
+
+    <!-- Botones: Paso 3 (Continuar) y FA2 (Cancelar) -->
+    <div class="dact">
+      <button type="button" class="sec" onclick="cancelarOperacion()">Cancelar</button>
+      <button type="submit" class="pri">Continuar</button>
+    </div>
+  </form>
+
+  <!-- Subformulario para ejecución de casos de extensión -->
+  <div id="sub" hidden>
+    <h3 id="subt"></h3>
+    <div class="flds" id="subf"></div>
+    <p class="xerr" id="suberr" role="alert" hidden></p>
+    <div class="dact">
+      <button type="button" class="sec" onclick="cancelarOperacion()">Cancelar</button>
+      <button type="button" class="pri" id="subok">Completar extensión</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- Modal: Pasos 5 y 6 - Resumen preliminar y confirmación -->
+<dialog id="dlgResumen">
+  <h3>Resumen preliminar de la solicitud</h3>
+  <div class="resumen-box" id="resumenContenido"></div>
+  <p style="font-size:13px; color:var(--mu); margin-top:10px;">Requiere confirmación para completar el alta.</p>
+  <div class="dact">
+    <button type="button" class="sec" onclick="cancelarOperacion()">Cancelar</button>
+    <button type="button" class="pri" onclick="confirmarRegistro()">Confirmar</button>
+  </div>
+</dialog>
+
+<div id="ts" role="status" aria-live="polite"></div>
+
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const money = n => new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(n || 0);
+const fmt = d => d ? new Date(d + 'T12:00:00').toLocaleDateString('es-AR', { day: 'numeric', month: 'short', year: 'numeric' }) : '—';
+
+let uid = 100;
+const id = () => ++uid;
+
+const S = {
+  retiros: [
+    {
+      id: 1,
+      nombre: 'Caminos al Ser',
+      descripcion: 'Retiro de 3 días con meditación y yoga.',
+      ubicacion: 'Capilla del Monte, Córdoba',
+      inicio: '2026-10-23',
+      fin: '2026-10-25',
+      categoria: 'Meditación',
+      precio: 480000,
+      estado: 'Planificado',
+      organizador: 'Sebastián Alberoni'
+    }
+  ]
+};
+
+let extServ = [], extAct = [], extInt = [], extEnl = [];
+let pendingRetiro = null;
+
+const say = m => {
+  const t = $('#ts');
+  t.textContent = m;
+  t.classList.add('on');
+  setTimeout(() => t.classList.remove('on'), 2500);
+};
+
+/* Renderizado de la lista */
+function renderRetiros() {
+  const cont = $('#listaRetiros');
+  if (!S.retiros.length) {
+    cont.innerHTML = '<p style="color:var(--mu)">No hay retiros registrados.</p>';
+    return;
+  }
+  cont.innerHTML = S.retiros.map(r => `
+    <div class="retiro-card">
+      <div style="display:flex; justify-content:space-between; align-items:start;">
+        <div>
+          <h3>${esc(r.nombre)}</h3>
+          <p>${esc(r.ubicacion)} · <b>${fmt(r.inicio)}</b> al <b>${fmt(r.fin)}</b></p>
+        </div>
+        <span class="badge">${money(r.precio)}</span>
+      </div>
+      <p>${esc(r.descripcion || '—')}</p>
+      <div style="font-size:13px; color:var(--mu);">
+        <span>Estado: <b>${esc(r.estado)}</b></span> ·
+        <span>Categoría: <b>${esc(r.categoria)}</b></span> ·
+        <span>Organizador: <b>${esc(r.organizador)}</b></span> ·
+        <span>Identificador único: <b>#${r.id}</b></span>
+      </div>
+    </div>
+  `).join('');
+}
+
+/* FA2: Cancelación voluntaria */
+function cancelarOperacion() {
+  pendingRetiro = null;
+  $('#sub').hidden = true;
+  $('#f').hidden = false;
+  $('#dlg').close();
+  $('#dlgResumen').close();
+  say('Operación cancelada. Datos temporales descartados.');
+}
+
+/* Abrir alta de retiro (Paso 1 y 2) */
+function abrirModalRegistrar() {
+  $('#f').reset();
+  $('#xerr0').hidden = true;
+  extServ = []; extAct = []; extInt = []; extEnl = [];
+  renderChips();
+  $('#dlg').showModal();
+}
+
+function renderChips() {
+  $('#lstServ').innerHTML = extServ.length ? extServ.map(s => `<div class="item-chip"><span>${esc(s)}</span></div>`).join('') : '<span style="font-size:12px; color:var(--mu);">Sin servicios asociados.</span>';
+  $('#lstAct').innerHTML = extAct.length ? extAct.map(a => `<div class="item-chip"><span>${esc(a)}</span></div>`).join('') : '<span style="font-size:12px; color:var(--mu);">Sin actividades asociadas.</span>';
+  $('#lstInt').innerHTML = extInt.length ? extInt.map(i => `<div class="item-chip"><span>${esc(i)}</span></div>`).join('') : '<span style="font-size:12px; color:var(--mu);">Sin integrantes cargados.</span>';
+  $('#lstEnl').innerHTML = extEnl.length ? extEnl.map(e => `<div class="item-chip"><span>${esc(e)}</span></div>`).join('') : '<span style="font-size:12px; color:var(--mu);">Sin enlaces adjuntos.</span>';
+}
+
+/* Ejecución de extensiones */
+function abrirExtension(tipo) {
+  $('#suberr').hidden = true;
+  if (tipo === 'serv') {
+    $('#subt').textContent = 'UC13: Registrar servicio adicional';
+    $('#subf').innerHTML = '<label><span>Nombre del servicio</span><input id="subVal" placeholder="Ej. Alojamiento completo"></label>';
+    $('#subok').onclick = () => {
+      const v = $('#subVal').value.trim();
+      if (!v) { $('#suberr').textContent = 'Ingrese el servicio.'; $('#suberr').hidden = false; return; }
+      extServ.push(v);
+      retornarExtension();
+    };
+  } else if (tipo === 'act') {
+    $('#subt').textContent = 'UC15: Registrar actividad';
+    $('#subf').innerHTML = '<label><span>Nombre de la actividad</span><input id="subVal" placeholder="Ej. Taller de Meditación"></label>';
+    $('#subok').onclick = () => {
+      const v = $('#subVal').value.trim();
+      if (!v) { $('#suberr').textContent = 'Ingrese la actividad.'; $('#suberr').hidden = false; return; }
+      extAct.push(v);
+      retornarExtension();
+    };
+  } else if (tipo === 'int') {
+    $('#subt').textContent = 'UC05: Registrar integrantes de grupo';
+    $('#subf').innerHTML = '<label><span>Nombre o lista de integrantes</span><input id="subVal" placeholder="Ej. Lucía Pérez (DNI 30111222)"></label>';
+    $('#subok').onclick = () => {
+      const v = $('#subVal').value.trim();
+      if (!v) { $('#suberr').textContent = 'Ingrese los integrantes.'; $('#suberr').hidden = false; return; }
+      extInt.push(v);
+      retornarExtension();
+    };
+  } else if (tipo === 'enl') {
+    $('#subt').textContent = 'UC08: Registrar enlaces de referencia';
+    $('#subf').innerHTML = '<label><span>URL o enlace de referencia</span><input id="subVal" placeholder="https://..."></label>';
+    $('#subok').onclick = () => {
+      const v = $('#subVal').value.trim();
+      if (!v) { $('#suberr').textContent = 'Ingrese el enlace.'; $('#suberr').hidden = false; return; }
+      extEnl.push(v);
+      retornarExtension();
+    };
+  }
+  $('#f').hidden = true;
+  $('#sub').hidden = false;
+}
+
+function retornarExtension() {
+  $('#sub').hidden = true;
+  $('#f').hidden = false;
+  renderChips();
+  // El usuario continúa en el flujo para avanzar al paso 4
+}
+
+/* Paso 3 (Continuar), Paso 4 (Validación) y FA1 */
+$('#f').onsubmit = e => {
+  e.preventDefault();
+  const d = new FormData($('#f'));
+  const o = Object.fromEntries(d.entries());
+
+  // Validación exacta de FA1
+  if (!o.nombre.trim() || !o.ubicacion.trim() || !o.inicio || !o.fin || !o.organizador.trim() || !o.precio.trim()) {
+    $('#xerr0').textContent = 'FA1: Faltan campos requeridos obligatorios.';
+    $('#xerr0').hidden = false;
+    return;
+  }
+
+  if (o.fin < o.inicio) {
+    $('#xerr0').textContent = 'FA1: La fecha final no puede ser anterior a la fecha inicial.';
+    $('#xerr0').hidden = false;
+    return;
+  }
+
+  $('#xerr0').hidden = true;
+
+  // Paso 5: El sistema presenta el resumen preliminar
+  pendingRetiro = {
+    nombre: o.nombre.trim(),
+    descripcion: o.descripcion.trim(),
+    ubicacion: o.ubicacion.trim(),
+    estado: o.estado,
+    inicio: o.inicio,
+    fin: o.fin,
+    organizador: o.organizador.trim(),
+    precio: +o.precio || 0,
+    categoria: o.categoria
+  };
+
+  $('#resumenContenido').innerHTML = `
+    <dl>
+      <dt>Nombre:</dt><dd>${esc(pendingRetiro.nombre)}</dd>
+      <dt>Descripción:</dt><dd>${esc(pendingRetiro.descripcion || '—')}</dd>
+      <dt>Ubicación:</dt><dd>${esc(pendingRetiro.ubicacion)}</dd>
+      <dt>Estado inicial:</dt><dd>${esc(pendingRetiro.estado)}</dd>
+      <dt>Fecha de inicio:</dt><dd>${fmt(pendingRetiro.inicio)}</dd>
+      <dt>Fecha de finalización:</dt><dd>${fmt(pendingRetiro.fin)}</dd>
+      <dt>Organizador:</dt><dd>${esc(pendingRetiro.organizador)}</dd>
+      <dt>Precio del retiro:</dt><dd>${money(pendingRetiro.precio)}</dd>
+      <dt>Categoría:</dt><dd>${esc(pendingRetiro.categoria)}</dd>
+    </dl>
+  `;
+
+  $('#dlg').close();
+  $('#dlgResumen').showModal();
+};
+
+/* Paso 6 y 7: Confirmación, persistencia y notificación */
+function confirmarRegistro() {
+  if (!pendingRetiro) return;
+
+  const nuevo = {
+    id: id(),
+    nombre: pendingRetiro.nombre,
+    descripcion: pendingRetiro.descripcion,
+    ubicacion: pendingRetiro.ubicacion,
+    estado: pendingRetiro.estado || 'Planificado',
+    inicio: pendingRetiro.inicio,
+    fin: pendingRetiro.fin,
+    organizador: pendingRetiro.organizador,
+    precio: pendingRetiro.precio,
+    categoria: pendingRetiro.categoria
+  };
+
+  S.retiros.unshift(nuevo);
+  $('#dlgResumen').close();
+  renderRetiros();
+  say(`Retiro registrado con ID #${nuevo.id} y estado ${nuevo.estado}.`);
+  pendingRetiro = null;
+}
+
+renderRetiros();
+</script>
+</body>
+</html>
